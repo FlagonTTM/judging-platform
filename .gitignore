@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# IDE
+.idea/
+.vscode/*
+!.vscode/settings.json
+
+# Env
+.env
+.env.local
+
+# OS
+.DS_Store
+
+# Local devmeta
+.devmeta
+
+# Internal brainstorming artifacts (not for public repo)
+docs/superpowers/
+
+# Claude Code agent files (not for public repo)
+CLAUDE.md
