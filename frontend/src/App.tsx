@@ -1,7 +1,15 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { AuthProvider } from './app/AuthContext';
+import { AppRouter } from './app/router';
+
+const queryClient = new QueryClient();
+
 export default function App() {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-slate-50">
-      <h1 className="text-3xl font-semibold text-slate-800">Judging Platform</h1>
-    </main>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <AppRouter />
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
