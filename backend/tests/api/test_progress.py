@@ -11,8 +11,12 @@ def _bootstrap(client: TestClient) -> tuple[str, str, str, str]:
     team_id = client.post(f"/api/v1/events/{event_id}/teams", json={
         "name": "Alpha", "contacts": {"owner_email": "owner@x.y"},
     }).json()["id"]
-    s1 = client.post(f"/api/v1/events/{event_id}/stages", json={"name": "Идея", "order": 0}).json()["id"]
-    s2 = client.post(f"/api/v1/events/{event_id}/stages", json={"name": "MVP", "order": 1}).json()["id"]
+    s1 = client.post(
+        f"/api/v1/events/{event_id}/stages", json={"name": "Идея", "order": 0}
+    ).json()["id"]
+    s2 = client.post(
+        f"/api/v1/events/{event_id}/stages", json={"name": "MVP", "order": 1}
+    ).json()["id"]
     client.post("/api/v1/auth/logout")
     return event_id, team_id, s1, s2
 
