@@ -8,17 +8,18 @@ export function TeamsRoster({ eventId }: { eventId: string }) {
   const del = useDeleteTeam(eventId);
   const [name, setName] = useState('');
   const [track, setTrack] = useState('');
+  const [ownerEmail, setOwnerEmail] = useState('');
   const [contact, setContact] = useState('');
 
   const onCreate = async (e: FormEvent) => {
     e.preventDefault();
-    await create.mutateAsync({
-      name,
-      track: track || null,
-      contacts: contact ? { telegram: contact } : {},
-    });
+    const contacts: Record<string, string> = {};
+    if (ownerEmail) contacts.owner_email = ownerEmail;
+    if (contact) contacts.telegram = contact;
+    await create.mutateAsync({ name, track: track || null, contacts });
     setName('');
     setTrack('');
+    setOwnerEmail('');
     setContact('');
   };
 
@@ -38,8 +39,11 @@ export function TeamsRoster({ eventId }: { eventId: string }) {
                   <p className="font-medium">{t.name}</p>
                   <p className="text-sm text-slate-500">
                     {t.track ?? 'без трека'}
-                    {t.contacts && Object.keys(t.contacts).length > 0
-                      ? ' · ' + Object.entries(t.contacts).map(([k, v]) => `${k}: ${v}`).join(', ')
+                    {(t.contacts as Record<string, string>)?.owner_email
+                      ? ` · ${(t.contacts as Record<string, string>).owner_email}`
+                      : ''}
+                    {(t.contacts as Record<string, string>)?.telegram
+                      ? ` · tg: ${(t.contacts as Record<string, string>).telegram}`
                       : ''}
                   </p>
                 </div>
@@ -68,6 +72,13 @@ export function TeamsRoster({ eventId }: { eventId: string }) {
           placeholder="Трек / кейс (опционально)"
           value={track}
           onChange={(e) => setTrack(e.target.value)}
+          className="w-full border rounded px-3 py-2"
+        />
+        <input
+          type="email"
+          placeholder="Email участника (для входа в систему)"
+          value={ownerEmail}
+          onChange={(e) => setOwnerEmail(e.target.value)}
           className="w-full border rounded px-3 py-2"
         />
         <input
