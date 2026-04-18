@@ -1,11 +1,15 @@
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import { useLogout } from '@/lib/mutations';
+import { useEvents } from '@/lib/queries';
+import { EventTimer } from '@/components/EventTimer';
 
 export function AppLayout() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const logout = useLogout();
+  const { data: events } = useEvents();
+  const activeEvent = events?.[0];
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -24,6 +28,17 @@ export function AppLayout() {
               <Link to="/judge" className="text-slate-700 hover:text-slate-900">
                 Оценивание
               </Link>
+            )}
+            {user?.role === 'team' && (
+              <Link to="/team/progress" className="text-slate-700 hover:text-slate-900">
+                Прогресс
+              </Link>
+            )}
+            {user && activeEvent && (
+              <span className="flex items-center gap-2">
+                <span className="text-xs text-slate-500">До дедлайна:</span>
+                <EventTimer deadline={activeEvent.deadline ?? activeEvent.end_at} />
+              </span>
             )}
             {user ? (
               <>
