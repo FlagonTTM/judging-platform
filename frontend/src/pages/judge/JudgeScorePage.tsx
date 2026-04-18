@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { api } from '@/lib/api';
-import { useCriteria, useMyScores } from '@/lib/queries';
+import { useCriteria, useMyScores, useTeamProgress } from '@/lib/queries';
 import { useSubmitScores, useUpsertScores } from '@/lib/mutations';
 import { StarRating } from './components/StarRating';
+import { StageProgressBar } from '@/components/StageProgressBar';
 import type { Team } from '@/lib/types';
 
 export default function JudgeScorePage() {
@@ -27,6 +28,7 @@ export default function JudgeScorePage() {
 
   const { data: criteria = [] } = useCriteria(team?.event_id);
   const { data: myScores = [] } = useMyScores(teamId);
+  const { data: progress } = useTeamProgress(teamId);
   const upsert = useUpsertScores(teamId);
   const submit = useSubmitScores(teamId);
 
@@ -90,6 +92,13 @@ export default function JudgeScorePage() {
         <h2 className="text-2xl font-semibold mt-2">{team.name}</h2>
         {team.track && <p className="text-sm text-slate-500">{team.track}</p>}
       </div>
+
+      {progress && progress.items.length > 0 && (
+        <div className="rounded border bg-white p-4">
+          <div className="mb-2 text-sm font-semibold">Прогресс команды</div>
+          <StageProgressBar items={progress.items} />
+        </div>
+      )}
 
       {submitted && (
         <div className="bg-sky-50 text-sky-900 border border-sky-200 rounded px-4 py-3 text-sm">
