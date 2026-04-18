@@ -20,12 +20,12 @@ Creates:
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from app.core.security import hash_password
 from app.db.session import SessionLocal
-from app.models.event import Event
 from app.models.criterion import Criterion
+from app.models.event import Event
 from app.models.score import Score, ScoreStatus
 from app.models.stage import Stage, StageStatus, TeamStageProgress
 from app.models.team import Team
@@ -33,7 +33,7 @@ from app.models.user import User, UserRole
 
 
 def _now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 ADMIN_EMAIL = "admin@demo.ru"
@@ -84,9 +84,9 @@ def seed() -> None:
         event = Event(
             id=uuid.uuid4(),
             name="TulaHack 2026 — Demo Event",
-            start_at=datetime(2026, 4, 17, 21, 0, tzinfo=timezone.utc),
-            end_at=datetime(2026, 4, 19, 13, 0, tzinfo=timezone.utc),
-            deadline=datetime(2026, 4, 19, 13, 0, tzinfo=timezone.utc),
+            start_at=datetime(2026, 4, 17, 21, 0, tzinfo=UTC),
+            end_at=datetime(2026, 4, 19, 13, 0, tzinfo=UTC),
+            deadline=datetime(2026, 4, 19, 13, 0, tzinfo=UTC),
             leaderboard_public=True,
             results_published=True,
             judge_comments_visible=True,
@@ -127,7 +127,7 @@ def seed() -> None:
         ]
         teams: list[Team] = []
         for i, (team_name, owner_email, score_row) in enumerate(
-            zip(TEAM_NAMES, TEAM_EMAILS, team_score_values)
+            zip(TEAM_NAMES, TEAM_EMAILS, team_score_values, strict=True)
         ):
             team = Team(
                 id=uuid.uuid4(),
@@ -150,7 +150,7 @@ def seed() -> None:
                 ))
 
             for judge in judges:
-                for crit, val in zip(criteria, score_row):
+                for crit, val in zip(criteria, score_row, strict=True):
                     db.add(Score(
                         id=uuid.uuid4(),
                         team_id=team.id,
