@@ -95,3 +95,57 @@ def test_team_role_cannot_score(client: TestClient):
         "items": [{"criterion_id": c1, "value": 5}],
     })
     assert r.status_code == 403
+
+
+def _full_submit(client: TestClient) -> tuple[str, str]:
+    event_id, team_id, [c1, c2] = _bootstrap(client)
+    client.post("/api/v1/auth/login", json={"email": "admin@x.y", "password": "qwerty123"})
+    owned = client.post(f"/api/v1/events/{event_id}/teams", json={
+        "name": "OwnedTeam", "contacts": {"owner_email": "owner@x.y"},
+    })
+    owned_team_id = owned.json()["id"]
+    client.post("/api/v1/auth/logout")
+
+    _login_judge(client)
+    for tid in [team_id, owned_team_id]:
+        client.put(f"/api/v1/teams/{tid}/scores", json={
+            "items": [
+                {"criterion_id": c1, "value": 8},
+                {"criterion_id": c2, "value": 7},
+            ],
+        })
+        client.post(f"/api/v1/teams/{tid}/scores/submit")
+    client.post("/api/v1/auth/logout")
+    return event_id, owned_team_id
+
+
+def test_team_result_blocked_before_publish(client: TestClient):
+    event_id, owned_team_id = _full_submit(client)
+    client.post("/api/v1/auth/register", json={
+        "email": "owner@x.y", "password": "qwerty123", "name": "O", "role": "team",
+    })
+    r = client.get(f"/api/v1/teams/{owned_team_id}/result")
+    assert r.status_code == 403
+
+
+def test_team_result_visible_after_publish(client: TestClient):
+    event_id, owned_team_id = _full_submit(client)
+    client.post("/api/v1/auth/login", json={"email": "admin@x.y", "password": "qwerty123"})
+    client.patch(f"/api/v1/events/{event_id}", json={"results_published": True})
+    client.post("/api/v1/auth/logout")
+
+    client.post("/api/v1/auth/register", json={
+        "email": "owner@x.y", "password": "qwerty123", "name": "O", "role": "team",
+    })
+    r = client.get(f"/api/v1/teams/{owned_team_id}/result")
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["rank"] >= 1
+    assert float(body["final_score"]) > 0
+
+
+def test_admin_can_see_result_without_publish(client: TestClient):
+    event_id, owned_team_id = _full_submit(client)
+    client.post("/api/v1/auth/login", json={"email": "admin@x.y", "password": "qwerty123"})
+    r = client.get(f"/api/v1/teams/{owned_team_id}/result")
+    assert r.status_code == 200

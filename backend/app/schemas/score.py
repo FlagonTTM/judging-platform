@@ -31,3 +31,11 @@ class LeaderboardRow(BaseModel):
     team_name: str
     final_score: Decimal
     judges_count: int
+
+
+class TeamResultOut(BaseModel):
+    team_id: str
+    team_name: str
+    rank: int
+    final_score: Decimal
+    judges_count: int

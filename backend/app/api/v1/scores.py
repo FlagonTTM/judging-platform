@@ -1,15 +1,19 @@
 import uuid
+from decimal import Decimal
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.api.deps import DbSession
+from app.api.deps import CurrentUser, DbSession
 from app.api.guards import require_judge
+from app.models.event import Event
 from app.models.score import Score
 from app.models.team import Team
-from app.models.user import User
-from app.schemas.score import BulkScoresIn, ScoreOut
+from app.models.user import User, UserRole
+from app.schemas.score import BulkScoresIn, ScoreOut, TeamResultOut
+from app.services import leaderboard as lb_svc
 from app.services import scores as svc
+from app.services import teams as teams_svc
 
 router = APIRouter(tags=["scores"])
 
@@ -72,3 +76,31 @@ def submit_scores(team_id: uuid.UUID, db: DbSession, user: JudgeUser) -> list[Sc
     except svc.ScoreValidationError as exc:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, str(exc)) from exc
     return [_to_out(s) for s in result]
+
+
+@router.get("/teams/{team_id}/result", response_model=TeamResultOut)
+def get_team_result(
+    team_id: uuid.UUID,
+    db: DbSession,
+    user: CurrentUser,
+) -> TeamResultOut:
+    team = _team_or_404(db, team_id)
+    event = db.get(Event, team.event_id)
+    if event is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "event not found")
+    if user.role == UserRole.team:
+        if not teams_svc.is_owner(team, user.email):
+            raise HTTPException(status.HTTP_403_FORBIDDEN, "not your team")
+        if not event.results_published:
+            raise HTTPException(status.HTTP_403_FORBIDDEN, "results not published yet")
+    rows = lb_svc.compute(db, team.event_id)
+    for rank, row in enumerate(rows, 1):
+        if row["team_id"] == str(team_id):
+            return TeamResultOut(rank=rank, **row)
+    return TeamResultOut(
+        team_id=str(team_id),
+        team_name=team.name,
+        rank=len(rows) + 1,
+        final_score=Decimal("0.00"),
+        judges_count=0,
+    )
