@@ -1,6 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
 import { api } from './api';
-import type { Criterion, Event, LeaderboardRow, Score, Team, User } from './types';
+import type {
+  Criterion,
+  Event,
+  EventProgressRow,
+  LeaderboardRow,
+  Score,
+  Stage,
+  Team,
+  TeamProgress,
+  User,
+} from './types';
 
 export function useMe() {
   return useQuery<User | null>({
@@ -62,5 +72,39 @@ export function useLeaderboard(eventId: string | undefined) {
     queryFn: async () => (await api.get<LeaderboardRow[]>(`/events/${eventId}/leaderboard`)).data,
     enabled: !!eventId,
     refetchInterval: 10_000,
+  });
+}
+
+export function useStages(eventId: string | undefined) {
+  return useQuery<Stage[]>({
+    queryKey: ['stages', eventId],
+    queryFn: async () => (await api.get<Stage[]>(`/events/${eventId}/stages`)).data,
+    enabled: !!eventId,
+  });
+}
+
+export function useTeamProgress(teamId: string | undefined) {
+  return useQuery<TeamProgress>({
+    queryKey: ['progress', 'team', teamId],
+    queryFn: async () => (await api.get<TeamProgress>(`/teams/${teamId}/progress`)).data,
+    enabled: !!teamId,
+    refetchInterval: 5000,
+  });
+}
+
+export function useEventProgress(eventId: string | undefined) {
+  return useQuery<EventProgressRow[]>({
+    queryKey: ['progress', 'event', eventId],
+    queryFn: async () =>
+      (await api.get<EventProgressRow[]>(`/events/${eventId}/progress`)).data,
+    enabled: !!eventId,
+    refetchInterval: 5000,
+  });
+}
+
+export function useMyTeam() {
+  return useQuery<Team | null>({
+    queryKey: ['me', 'team'],
+    queryFn: async () => (await api.get<Team | null>('/me/team')).data,
   });
 }

@@ -1,6 +1,16 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from './api';
-import type { Criterion, Event, Score, Team, User, UserRole } from './types';
+import type {
+  Criterion,
+  Event,
+  Score,
+  Stage,
+  StageStatus,
+  Team,
+  TeamProgress,
+  User,
+  UserRole,
+} from './types';
 
 export function useLogin() {
   const qc = useQueryClient();
@@ -121,3 +131,23 @@ export function useSubmitScores(teamId: string) {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['teams', teamId, 'scores', 'me'] }),
   });
 }
+
+export const createStage = (eventId: string, name: string, order: number) =>
+  api.post<Stage>(`/events/${eventId}/stages`, { name, order }).then((r) => r.data);
+
+export const updateStage = (
+  stageId: string,
+  patch: { name?: string; order?: number },
+) => api.patch<Stage>(`/stages/${stageId}`, patch).then((r) => r.data);
+
+export const deleteStage = (stageId: string) =>
+  api.delete(`/stages/${stageId}`).then(() => undefined);
+
+export const setStageStatus = (
+  teamId: string,
+  stageId: string,
+  status: StageStatus,
+) =>
+  api
+    .put<TeamProgress>(`/teams/${teamId}/progress`, { stage_id: stageId, status })
+    .then((r) => r.data);

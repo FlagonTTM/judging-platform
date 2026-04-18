@@ -53,3 +53,31 @@ export interface LeaderboardRow {
   final_score: string;
   judges_count: number;
 }
+
+export type StageStatus = 'pending' | 'in_progress' | 'done';
+
+export interface Stage {
+  id: string;
+  event_id: string;
+  name: string;
+  order: number;
+}
+
+export interface TeamProgressItem {
+  stage_id: string;
+  stage_name: string;
+  order: number;
+  status: StageStatus;
+  updated_at: string | null;
+}
+
+export interface TeamProgress {
+  team_id: string;
+  items: TeamProgressItem[];
+}
+
+export interface EventProgressRow {
+  team_id: string;
+  team_name: string;
+  items: TeamProgressItem[];
+}
