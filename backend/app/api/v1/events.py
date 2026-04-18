@@ -22,6 +22,9 @@ def _to_out(e: Event) -> EventOut:
         start_at=e.start_at,
         end_at=e.end_at,
         deadline=e.deadline,
+        results_published=e.results_published,
+        leaderboard_public=e.leaderboard_public,
+        judge_comments_visible=e.judge_comments_visible,
     )
 
 

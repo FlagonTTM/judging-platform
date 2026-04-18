@@ -15,6 +15,9 @@ class EventUpdate(BaseModel):
     start_at: datetime | None = None
     end_at: datetime | None = None
     deadline: datetime | None = None
+    results_published: bool | None = None
+    leaderboard_public: bool | None = None
+    judge_comments_visible: bool | None = None
 
 
 class EventOut(BaseModel):
@@ -24,3 +27,6 @@ class EventOut(BaseModel):
     start_at: datetime
     end_at: datetime
     deadline: datetime | None
+    results_published: bool
+    leaderboard_public: bool
+    judge_comments_visible: bool
