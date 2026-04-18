@@ -30,9 +30,14 @@ export function AppLayout() {
               </Link>
             )}
             {user?.role === 'team' && (
-              <Link to="/team/progress" className="text-slate-700 hover:text-slate-900">
-                Прогресс
-              </Link>
+              <>
+                <Link to="/team/progress" className="text-slate-700 hover:text-slate-900">
+                  Прогресс
+                </Link>
+                <Link to="/team/results" className="text-slate-700 hover:text-slate-900">
+                  Результаты
+                </Link>
+              </>
             )}
             {user && activeEvent && (
               <span className="flex items-center gap-2">

@@ -81,3 +81,11 @@ export interface EventProgressRow {
   team_name: string;
   items: TeamProgressItem[];
 }
+
+export interface TeamResultOut {
+  team_id: string;
+  team_name: string;
+  rank: number;
+  final_score: string;
+  judges_count: number;
+}

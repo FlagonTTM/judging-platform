@@ -9,6 +9,7 @@ import type {
   Stage,
   Team,
   TeamProgress,
+  TeamResultOut,
   User,
 } from './types';
 
@@ -106,5 +107,19 @@ export function useMyTeam() {
   return useQuery<Team | null>({
     queryKey: ['me', 'team'],
     queryFn: async () => (await api.get<Team | null>('/me/team')).data,
+  });
+}
+
+export function useMyTeamResult(teamId: string | undefined) {
+  return useQuery<TeamResultOut | null>({
+    queryKey: ['teams', teamId, 'result'],
+    queryFn: async () => {
+      try {
+        return (await api.get<TeamResultOut>(`/teams/${teamId}/result`)).data;
+      } catch {
+        return null;
+      }
+    },
+    enabled: !!teamId,
   });
 }

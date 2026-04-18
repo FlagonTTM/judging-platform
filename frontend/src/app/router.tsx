@@ -10,6 +10,7 @@ import JudgeTeamsPage from '@/pages/judge/JudgeTeamsPage';
 import JudgeScorePage from '@/pages/judge/JudgeScorePage';
 import LeaderboardPage from '@/pages/leaderboard/LeaderboardPage';
 import TeamProgressPage from '@/pages/team/TeamProgressPage';
+import TeamResultPage from '@/pages/team/TeamResultPage';
 
 const router = createBrowserRouter([
   {
@@ -56,6 +57,14 @@ const router = createBrowserRouter([
         element: (
           <RequireAuth roles={['team', 'admin']}>
             <TeamProgressPage />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: '/team/results',
+        element: (
+          <RequireAuth roles={['team', 'admin']}>
+            <TeamResultPage />
           </RequireAuth>
         ),
       },
