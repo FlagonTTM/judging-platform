@@ -1,11 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, Response, status
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, HTTPException, Response, status
 
-from app.api.deps import get_current_user
+from app.api.deps import CurrentUser, DbSession
 from app.core.config import get_settings
 from app.core.security import create_access_token
-from app.db.session import get_db
-from app.models.user import User
 from app.schemas.auth import LoginIn, RegisterIn, UserOut
 from app.services.auth import AuthError, authenticate, register_user
 
@@ -26,8 +23,12 @@ def _set_cookie(response: Response, token: str) -> None:
     )
 
 
+def _user_out(user) -> UserOut:
+    return UserOut(id=str(user.id), email=user.email, name=user.name, role=user.role)
+
+
 @router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
-def register(payload: RegisterIn, response: Response, db: Session = Depends(get_db)) -> UserOut:
+def register(payload: RegisterIn, response: Response, db: DbSession) -> UserOut:
     try:
         user = register_user(
             db,
@@ -39,17 +40,17 @@ def register(payload: RegisterIn, response: Response, db: Session = Depends(get_
     except AuthError as exc:
         raise HTTPException(status.HTTP_409_CONFLICT, str(exc)) from exc
     _set_cookie(response, create_access_token(str(user.id), user.role.value))
-    return UserOut(id=str(user.id), email=user.email, name=user.name, role=user.role)
+    return _user_out(user)
 
 
 @router.post("/login", response_model=UserOut)
-def login(payload: LoginIn, response: Response, db: Session = Depends(get_db)) -> UserOut:
+def login(payload: LoginIn, response: Response, db: DbSession) -> UserOut:
     try:
         user = authenticate(db, email=payload.email, password=payload.password)
     except AuthError as exc:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, str(exc)) from exc
     _set_cookie(response, create_access_token(str(user.id), user.role.value))
-    return UserOut(id=str(user.id), email=user.email, name=user.name, role=user.role)
+    return _user_out(user)
 
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
@@ -58,5 +59,5 @@ def logout(response: Response) -> None:
 
 
 @router.get("/me", response_model=UserOut)
-def me(user: User = Depends(get_current_user)) -> UserOut:
-    return UserOut(id=str(user.id), email=user.email, name=user.name, role=user.role)
+def me(user: CurrentUser) -> UserOut:
+    return _user_out(user)

@@ -32,10 +32,12 @@ def db_engine():
 
 @pytest.fixture
 def client(db_engine):
-    TestingSession = sessionmaker(bind=db_engine, autoflush=False, autocommit=False, future=True)
+    session_factory = sessionmaker(
+        bind=db_engine, autoflush=False, autocommit=False, future=True
+    )
 
     def _override():
-        s = TestingSession()
+        s = session_factory()
         try:
             yield s
         finally:
