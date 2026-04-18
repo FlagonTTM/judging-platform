@@ -1,24 +1,21 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
-
-export type UserRole = 'admin' | 'judge' | 'team';
-
-export interface CurrentUser {
-  id: string;
-  email: string;
-  name: string;
-  role: UserRole;
-}
+import { createContext, useContext, type ReactNode } from 'react';
+import { useMe } from '@/lib/queries';
+import type { User } from '@/lib/types';
 
 interface AuthContextValue {
-  user: CurrentUser | null;
-  setUser: (u: CurrentUser | null) => void;
+  user: User | null;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<CurrentUser | null>(null);
-  return <AuthContext.Provider value={{ user, setUser }}>{children}</AuthContext.Provider>;
+  const { data, isLoading } = useMe();
+  return (
+    <AuthContext.Provider value={{ user: data ?? null, isLoading }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth(): AuthContextValue {
