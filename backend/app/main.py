@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.v1 import auth, criteria, events, health, teams
+from app.api.v1 import auth, criteria, events, health, leaderboard, scores, teams
 from app.core.config import get_settings
 
 
@@ -22,6 +22,8 @@ def create_app() -> FastAPI:
     app.include_router(events.router, prefix="/api/v1")
     app.include_router(criteria.router, prefix="/api/v1")
     app.include_router(teams.router, prefix="/api/v1")
+    app.include_router(scores.router, prefix="/api/v1")
+    app.include_router(leaderboard.router, prefix="/api/v1")
     return app
 
 

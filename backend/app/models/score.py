@@ -3,6 +3,7 @@ from __future__ import annotations
 import enum
 import uuid
 from datetime import datetime
+from decimal import Decimal
 
 from sqlalchemy import (
     DateTime,
@@ -40,7 +41,7 @@ class Score(Base):
     criterion_id: Mapped[uuid.UUID] = mapped_column(
         Uuid(), ForeignKey("criteria.id", ondelete="CASCADE"), nullable=False, index=True
     )
-    value: Mapped[float] = mapped_column(Numeric(5, 2), nullable=False)
+    value: Mapped[Decimal] = mapped_column(Numeric(5, 2), nullable=False)
     comment: Mapped[str | None] = mapped_column(String(2000), nullable=True)
     status: Mapped[ScoreStatus] = mapped_column(
         Enum(ScoreStatus, name="score_status"), nullable=False, default=ScoreStatus.draft
