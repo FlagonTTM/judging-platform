@@ -4,8 +4,9 @@ import { useEvent } from '@/lib/queries';
 import { CriteriaBuilder } from './components/CriteriaBuilder';
 import { TeamsRoster } from './components/TeamsRoster';
 import { EventSettings } from './components/EventSettings';
+import { StagesEditor } from './components/StagesEditor';
 
-type Tab = 'criteria' | 'teams' | 'settings';
+type Tab = 'criteria' | 'teams' | 'stages' | 'settings';
 
 export default function EventDetailPage() {
   const { id = '' } = useParams<{ id: string }>();
@@ -40,6 +41,9 @@ export default function EventDetailPage() {
         <button onClick={() => setTab('teams')} className={tabClass(tab === 'teams')}>
           Команды
         </button>
+        <button onClick={() => setTab('stages')} className={tabClass(tab === 'stages')}>
+          Этапы
+        </button>
         <button onClick={() => setTab('settings')} className={tabClass(tab === 'settings')}>
           Настройки
         </button>
@@ -47,6 +51,7 @@ export default function EventDetailPage() {
 
       {tab === 'criteria' && <CriteriaBuilder eventId={id} />}
       {tab === 'teams' && <TeamsRoster eventId={id} />}
+      {tab === 'stages' && <StagesEditor eventId={id} />}
       {tab === 'settings' && <EventSettings eventId={id} />}
     </div>
   );
