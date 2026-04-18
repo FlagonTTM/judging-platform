@@ -16,6 +16,7 @@ def _setup_event(client: TestClient) -> tuple[str, list[str], list[str]]:
     c_ux = client.post(f"/api/v1/events/{event_id}/criteria", json={
         "name": "UX", "weight": 60, "max_score": 10,
     }).json()["id"]
+    client.patch(f"/api/v1/events/{event_id}", json={"leaderboard_public": True})
     client.post("/api/v1/auth/logout")
     return event_id, [t_alpha, t_beta], [c_tech, c_ux]
 
