@@ -74,6 +74,16 @@ export default function JudgeScorePage() {
   const onSubmit = async () => {
     setError(null);
     try {
+      const items = criteria
+        .filter((c) => values[c.id] !== undefined)
+        .map((c) => ({
+          criterion_id: c.id,
+          value: values[c.id],
+          comment: comments[c.id] || undefined,
+        }));
+      if (items.length > 0) {
+        await upsert.mutateAsync(items);
+      }
       await submit.mutateAsync();
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
