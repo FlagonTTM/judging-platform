@@ -1,8 +1,9 @@
 import uuid
 
 from fastapi import APIRouter, HTTPException, status
+from sqlalchemy import select
 
-from app.api.deps import DbSession
+from app.api.deps import CurrentUser, DbSession
 from app.api.v1.events import AdminUser
 from app.models.team import Team
 from app.schemas.team import TeamCreate, TeamOut, TeamUpdate
@@ -20,6 +21,15 @@ def _to_out(t: Team) -> TeamOut:
         members=t.members,
         contacts=t.contacts,
     )
+
+
+@router.get("/me/team", response_model=TeamOut | None)
+def my_team(db: DbSession, user: CurrentUser) -> TeamOut | None:
+    teams = db.scalars(select(Team)).all()
+    for t in teams:
+        if t.contacts.get("owner_email") == user.email:
+            return _to_out(t)
+    return None
 
 
 @router.get("/events/{event_id}/teams", response_model=list[TeamOut])

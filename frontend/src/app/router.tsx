@@ -9,6 +9,7 @@ import EventDetailPage from '@/pages/admin/EventDetailPage';
 import JudgeTeamsPage from '@/pages/judge/JudgeTeamsPage';
 import JudgeScorePage from '@/pages/judge/JudgeScorePage';
 import LeaderboardPage from '@/pages/leaderboard/LeaderboardPage';
+import TeamProgressPage from '@/pages/team/TeamProgressPage';
 
 const router = createBrowserRouter([
   {
@@ -50,6 +51,14 @@ const router = createBrowserRouter([
         ),
       },
       { path: '/events/:id/leaderboard', element: <LeaderboardPage /> },
+      {
+        path: '/team/progress',
+        element: (
+          <RequireAuth roles={['team', 'admin']}>
+            <TeamProgressPage />
+          </RequireAuth>
+        ),
+      },
     ],
   },
 ]);

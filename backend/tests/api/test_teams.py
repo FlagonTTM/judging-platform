@@ -55,3 +55,26 @@ def test_team_owner_marked_via_contacts(client: TestClient):
     })
     assert r.status_code == 201, r.text
     assert r.json()["contacts"]["owner_email"] == "owner@x.y"
+
+
+def test_my_team_returns_owned_team(client: TestClient):
+    event_id = _setup(client)
+    client.post(f"/api/v1/events/{event_id}/teams", json={
+        "name": "Mine", "contacts": {"owner_email": "owner@x.y"},
+    })
+    client.post("/api/v1/auth/logout")
+    client.post("/api/v1/auth/register", json={
+        "email": "owner@x.y", "password": "qwerty123", "name": "O", "role": "team",
+    })
+    r = client.get("/api/v1/me/team")
+    assert r.status_code == 200 and r.json()["name"] == "Mine"
+
+
+def test_my_team_returns_null_if_none(client: TestClient):
+    _setup(client)
+    client.post("/api/v1/auth/logout")
+    client.post("/api/v1/auth/register", json={
+        "email": "lonely@x.y", "password": "qwerty123", "name": "L", "role": "team",
+    })
+    r = client.get("/api/v1/me/team")
+    assert r.status_code == 200 and r.json() is None
