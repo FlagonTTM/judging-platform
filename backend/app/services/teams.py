@@ -34,3 +34,7 @@ def update(db: Session, team: Team, **fields: Any) -> Team:
 def delete(db: Session, team: Team) -> None:
     db.delete(team)
     db.commit()
+
+
+def is_owner(team: Team, user_email: str) -> bool:
+    return team.contacts.get("owner_email") == user_email

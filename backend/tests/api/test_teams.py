@@ -46,3 +46,12 @@ def test_teams_create_forbidden_for_team_role(client: TestClient):
     })
     r = client.post(f"/api/v1/events/{event_id}/teams", json={"name": "X"})
     assert r.status_code == 403
+
+
+def test_team_owner_marked_via_contacts(client: TestClient):
+    event_id = _setup(client)
+    r = client.post(f"/api/v1/events/{event_id}/teams", json={
+        "name": "Owned", "contacts": {"owner_email": "owner@x.y"},
+    })
+    assert r.status_code == 201, r.text
+    assert r.json()["contacts"]["owner_email"] == "owner@x.y"
