@@ -5,12 +5,13 @@ requires-python = ">=3.11"
 dependencies = [
     "fastapi>=0.115",
     "uvicorn[standard]>=0.30",
-    "pydantic>=2.5",
+    "pydantic[email]>=2.5",
     "pydantic-settings>=2.2",
     "sqlalchemy>=2.0",
     "psycopg[binary]>=3.1",
     "alembic>=1.13",
     "passlib[bcrypt]>=1.7",
+    "bcrypt<4.1",
     "python-jose[cryptography]>=3.3",
     "python-multipart>=0.0.9",
 ]
@@ -23,6 +24,8 @@ dev = [
     "ruff>=0.4",
     "mypy>=1.10",
     "testcontainers[postgres]>=4.0",
+    "types-python-jose>=3.3",
+    "types-passlib>=1.7",
 ]
 
 [tool.ruff]

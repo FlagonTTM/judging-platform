@@ -1,4 +1,5 @@
 import uuid
+from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -14,7 +15,7 @@ def get_event(db: Session, event_id: uuid.UUID) -> Event | None:
     return db.get(Event, event_id)
 
 
-def create_event(db: Session, **fields) -> Event:
+def create_event(db: Session, **fields: Any) -> Event:
     event = Event(**fields)
     db.add(event)
     db.commit()
@@ -22,7 +23,7 @@ def create_event(db: Session, **fields) -> Event:
     return event
 
 
-def update_event(db: Session, event: Event, **fields) -> Event:
+def update_event(db: Session, event: Event, **fields: Any) -> Event:
     for k, v in fields.items():
         if v is not None:
             setattr(event, k, v)

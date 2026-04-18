@@ -1,4 +1,5 @@
 import uuid
+from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -23,7 +24,7 @@ def total_weight(db: Session, event_id: uuid.UUID, *, exclude_id: uuid.UUID | No
     return sum(c.weight for c in crits if c.id != exclude_id)
 
 
-def create(db: Session, event_id: uuid.UUID, **fields) -> Criterion:
+def create(db: Session, event_id: uuid.UUID, **fields: Any) -> Criterion:
     new_total = total_weight(db, event_id) + fields["weight"]
     if new_total > 100:
         raise WeightSumError(f"sum of weights would be {new_total}, max 100")
@@ -34,7 +35,7 @@ def create(db: Session, event_id: uuid.UUID, **fields) -> Criterion:
     return crit
 
 
-def update(db: Session, crit: Criterion, **fields) -> Criterion:
+def update(db: Session, crit: Criterion, **fields: Any) -> Criterion:
     new_weight = fields.get("weight", crit.weight)
     if new_weight is not None and new_weight != crit.weight:
         new_total = total_weight(db, crit.event_id, exclude_id=crit.id) + new_weight

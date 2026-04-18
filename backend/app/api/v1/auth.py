@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException, Response, status
 from app.api.deps import CurrentUser, DbSession
 from app.core.config import get_settings
 from app.core.security import create_access_token
+from app.models.user import User
 from app.schemas.auth import LoginIn, RegisterIn, UserOut
 from app.services.auth import AuthError, authenticate, register_user
 
@@ -23,7 +24,7 @@ def _set_cookie(response: Response, token: str) -> None:
     )
 
 
-def _user_out(user) -> UserOut:
+def _user_out(user: User) -> UserOut:
     return UserOut(id=str(user.id), email=user.email, name=user.name, role=user.role)
 
 
