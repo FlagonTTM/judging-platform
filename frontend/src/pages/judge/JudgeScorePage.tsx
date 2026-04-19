@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useCriteria, useMyScores, useTeam, useTeamProgress } from '@/lib/queries';
 import { useSubmitScores, useUpsertScores } from '@/lib/mutations';
-import { StarRating } from './components/StarRating';
+import { ScoreSlider } from './components/ScoreSlider';
 import { StageProgressBar } from '@/components/StageProgressBar';
 
 export default function JudgeScorePage() {
@@ -106,7 +106,7 @@ export default function JudgeScorePage() {
                 </span>
               </div>
             </div>
-            <StarRating
+            <ScoreSlider
               value={values[c.id] ?? 0}
               max={c.max_score}
               disabled={submitted}

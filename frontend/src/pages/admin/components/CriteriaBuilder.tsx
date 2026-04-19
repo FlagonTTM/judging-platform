@@ -27,20 +27,13 @@ export function CriteriaBuilder({ eventId }: { eventId: string }) {
     }
   };
 
+  const sumOk = totalWeight === 100;
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between">
         <h3 className="font-semibold text-slate-900">Критерии оценки</h3>
-        <span
-          className={
-            'text-xs px-2.5 py-0.5 rounded-full font-medium ' +
-            (totalWeight === 100
-              ? 'bg-emerald-100 text-emerald-700'
-              : 'bg-amber-100 text-amber-700')
-          }
-        >
-          {totalWeight} / 100
-        </span>
+        <span className="text-xs text-slate-400">вес критериев в процентах, сумма = 100</span>
       </div>
 
       {isLoading ? (
@@ -48,44 +41,44 @@ export function CriteriaBuilder({ eventId }: { eventId: string }) {
       ) : criteria.length === 0 ? (
         <p className="text-slate-500 text-sm">Критериев пока нет</p>
       ) : (
-        <div className="border border-slate-200 rounded-xl overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-slate-50 border-b border-slate-200">
-                <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                  Название
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                  Вес
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                  Макс. балл
-                </th>
-                <th className="px-4 py-3" />
-              </tr>
-            </thead>
-            <tbody>
-              {criteria.map((c) => (
-                <tr key={c.id} className="border-b border-slate-100 last:border-b-0 hover:bg-slate-50">
-                  <td className="px-4 py-3 font-medium text-slate-900">{c.name}</td>
-                  <td className="px-4 py-3">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">
-                      {c.weight}%
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-slate-600">{c.max_score}</td>
-                  <td className="px-4 py-3 text-right">
-                    <button
-                      className="text-sm text-red-500 hover:text-red-700 transition-colors"
-                      onClick={() => del.mutate(c.id)}
-                    >
-                      Удалить
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="border border-slate-200 rounded-xl overflow-hidden divide-y divide-slate-100">
+          {criteria.map((c) => (
+            <div
+              key={c.id}
+              className="flex items-center gap-4 px-5 py-3.5 hover:bg-slate-50 transition-colors"
+            >
+              <div className="flex-1 font-medium text-slate-900">{c.name}</div>
+              <span className="font-mono text-lg font-semibold text-emerald-700 tabular-nums w-16 text-right">
+                {c.weight}%
+              </span>
+              <span className="text-sm text-slate-400 tabular-nums w-12 text-right">
+                /{c.max_score}
+              </span>
+              <button
+                className="text-sm text-slate-400 hover:text-red-600 transition-colors w-20 text-right"
+                onClick={() => del.mutate(c.id)}
+              >
+                Удалить
+              </button>
+            </div>
+          ))}
+          <div
+            className={
+              'flex items-center gap-4 px-5 py-3 font-medium ' +
+              (sumOk
+                ? 'bg-emerald-50 text-emerald-800'
+                : 'bg-amber-50 text-amber-800')
+            }
+          >
+            <div className="flex-1">Σ суммарный вес</div>
+            <span className="font-mono text-lg font-semibold tabular-nums w-16 text-right">
+              {totalWeight}%
+            </span>
+            <span className="text-sm text-slate-400 w-12 text-right">
+              {sumOk ? 'ок' : 'нужно 100'}
+            </span>
+            <span className="w-20" />
+          </div>
         </div>
       )}
 

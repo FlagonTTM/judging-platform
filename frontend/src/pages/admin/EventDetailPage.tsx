@@ -5,8 +5,9 @@ import { CriteriaBuilder } from './components/CriteriaBuilder';
 import { TeamsRoster } from './components/TeamsRoster';
 import { EventSettings } from './components/EventSettings';
 import { StagesEditor } from './components/StagesEditor';
+import { ProgressMatrix } from './components/ProgressMatrix';
 
-type Tab = 'criteria' | 'teams' | 'stages' | 'settings';
+type Tab = 'criteria' | 'teams' | 'stages' | 'progress' | 'settings';
 
 export default function EventDetailPage() {
   const { id = '' } = useParams<{ id: string }>();
@@ -47,6 +48,9 @@ export default function EventDetailPage() {
         <button onClick={() => setTab('stages')} className={tabClass(tab === 'stages')}>
           Этапы
         </button>
+        <button onClick={() => setTab('progress')} className={tabClass(tab === 'progress')}>
+          Прогресс
+        </button>
         <button onClick={() => setTab('settings')} className={tabClass(tab === 'settings')}>
           Настройки
         </button>
@@ -56,6 +60,7 @@ export default function EventDetailPage() {
         {tab === 'criteria' && <CriteriaBuilder eventId={id} />}
         {tab === 'teams' && <TeamsRoster eventId={id} />}
         {tab === 'stages' && <StagesEditor eventId={id} />}
+        {tab === 'progress' && <ProgressMatrix eventId={id} />}
         {tab === 'settings' && <EventSettings eventId={id} />}
       </div>
     </div>

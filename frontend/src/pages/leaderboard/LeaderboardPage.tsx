@@ -1,11 +1,11 @@
 import { useParams } from 'react-router-dom';
 import { useEvent, useLeaderboard } from '@/lib/queries';
 
-const rankBadge = (i: number) => {
-  if (i === 0) return 'bg-amber-100 text-amber-700';
-  if (i === 1) return 'bg-slate-100 text-slate-600';
-  if (i === 2) return 'bg-orange-100 text-orange-700';
-  return 'bg-slate-50 text-slate-500';
+const medal = (i: number) => {
+  if (i === 0) return '🥇';
+  if (i === 1) return '🥈';
+  if (i === 2) return '🥉';
+  return null;
 };
 
 export default function LeaderboardPage() {
@@ -33,55 +33,63 @@ export default function LeaderboardPage() {
         <p className="text-sm text-slate-500 mt-1">Обновляется каждые 10 секунд</p>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-slate-50 border-b border-slate-200">
-              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide w-16">
-                Место
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                Команда
-              </th>
-              <th className="px-4 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wide w-32">
-                Балл
-              </th>
-              <th className="px-4 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wide w-28">
-                Судей
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.length === 0 ? (
-              <tr>
-                <td colSpan={4} className="px-4 py-10 text-center text-slate-500 text-sm">
-                  Пока нет оценок
-                </td>
-              </tr>
-            ) : (
-              rows.map((row, i) => (
-                <tr key={row.team_id} className="border-b border-slate-100 last:border-b-0 hover:bg-slate-50 transition-colors">
-                  <td className="px-4 py-3">
-                    <span
-                      className={
-                        'inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ' +
-                        rankBadge(i)
-                      }
-                    >
-                      {i + 1}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 font-medium text-slate-900">{row.team_name}</td>
-                  <td className="px-4 py-3 text-right font-mono font-semibold text-emerald-700">
-                    {row.final_score}
-                  </td>
-                  <td className="px-4 py-3 text-right text-sm text-slate-500">{row.judges_count}</td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+      {rows.length === 0 ? (
+        <div className="bg-white border border-slate-200 rounded-xl shadow-sm px-6 py-12 text-center text-slate-500 text-sm">
+          Пока нет оценок
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {rows.map((row, i) => {
+            const isLeader = i === 0;
+            return (
+              <div
+                key={row.team_id}
+                className={
+                  'flex items-center gap-4 rounded-xl px-5 py-4 transition-colors ' +
+                  (isLeader
+                    ? 'bg-emerald-600 text-white shadow-lg ring-1 ring-emerald-700'
+                    : 'bg-white border border-slate-200 hover:border-slate-300')
+                }
+              >
+                <div
+                  className={
+                    'flex items-center justify-center w-10 h-10 rounded-full font-bold tabular-nums ' +
+                    (isLeader
+                      ? 'bg-white/20 text-white text-base'
+                      : 'bg-slate-100 text-slate-600 text-sm')
+                  }
+                >
+                  {medal(i) ?? i + 1}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p
+                    className={
+                      'font-semibold truncate ' + (isLeader ? 'text-white' : 'text-slate-900')
+                    }
+                  >
+                    {row.team_name}
+                  </p>
+                  <p
+                    className={
+                      'text-xs mt-0.5 ' + (isLeader ? 'text-emerald-100' : 'text-slate-500')
+                    }
+                  >
+                    судей: {row.judges_count}
+                  </p>
+                </div>
+                <div
+                  className={
+                    'font-mono text-xl font-bold tabular-nums ' +
+                    (isLeader ? 'text-white' : 'text-emerald-700')
+                  }
+                >
+                  {row.final_score.toFixed(1)}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
