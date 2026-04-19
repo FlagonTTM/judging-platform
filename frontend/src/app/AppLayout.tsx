@@ -47,6 +47,9 @@ export function AppLayout() {
               <NavLink to="/team/progress" className={navClass}>
                 Прогресс
               </NavLink>
+              <NavLink to="/team/submission" className={navClass}>
+                Заявка
+              </NavLink>
               <NavLink to="/team/results" className={navClass}>
                 Результаты
               </NavLink>

@@ -1,11 +1,14 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from './api';
 import type {
+  CheckResult,
   Criterion,
   Event,
+  PreviewResult,
   Score,
   Stage,
   StageStatus,
+  Submission,
   Team,
   TeamProgress,
   User,
@@ -105,12 +108,45 @@ export function useCreateTeam(eventId: string) {
   });
 }
 
+export function useUpdateTeam(eventId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: {
+      id: string;
+      name?: string;
+      track?: string | null;
+      contacts?: Record<string, unknown>;
+    }) => {
+      const { id, ...patch } = vars;
+      return (await api.patch<Team>(`/teams/${id}`, patch)).data;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['events', eventId, 'teams'] }),
+  });
+}
+
 export function useDeleteTeam(eventId: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
       await api.delete(`/teams/${id}`);
     },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['events', eventId, 'teams'] }),
+  });
+}
+
+export interface ImportTeamsResult {
+  created: number;
+  skipped: number;
+  errors: string[];
+}
+
+export function useImportTeams(eventId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: { sheet_url: string; skip_header?: boolean }) =>
+      (
+        await api.post<ImportTeamsResult>(`/events/${eventId}/teams/import`, vars)
+      ).data,
     onSuccess: () => qc.invalidateQueries({ queryKey: ['events', eventId, 'teams'] }),
   });
 }
@@ -151,3 +187,26 @@ export const setStageStatus = (
   api
     .put<TeamProgress>(`/teams/${teamId}/progress`, { stage_id: stageId, status })
     .then((r) => r.data);
+
+export function useSaveSubmission(teamId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: Submission) =>
+      (await api.put<Submission>(`/teams/${teamId}/submission`, vars)).data,
+    onSuccess: (data) => qc.setQueryData(['teams', teamId, 'submission'], data),
+  });
+}
+
+export function useSubmissionCheck(teamId: string) {
+  return useMutation({
+    mutationFn: async () =>
+      (await api.post<CheckResult>(`/teams/${teamId}/submission/check`)).data,
+  });
+}
+
+export function useSubmissionPreview(teamId: string) {
+  return useMutation({
+    mutationFn: async () =>
+      (await api.post<PreviewResult>(`/teams/${teamId}/submission/preview`)).data,
+  });
+}

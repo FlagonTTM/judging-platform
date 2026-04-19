@@ -89,3 +89,42 @@ export interface TeamResultOut {
   final_score: number;
   judges_count: number;
 }
+
+export interface Submission {
+  description: string | null;
+  repo_url: string | null;
+  demo_url: string | null;
+  video_url: string | null;
+  screenshot_url: string | null;
+}
+
+export type CheckStatus = 'ok' | 'missing' | 'weak' | 'broken';
+
+export interface CheckItem {
+  key: string;
+  label: string;
+  status: CheckStatus;
+  message: string;
+}
+
+export interface CheckResult {
+  overall: 'ready' | 'weak' | 'not_ready';
+  items: CheckItem[];
+}
+
+export type CoverageLevel = 'strong' | 'partial' | 'missing';
+
+export interface PreviewCoverage {
+  criterion_id: string;
+  criterion_name: string;
+  coverage: CoverageLevel;
+  note: string;
+}
+
+export interface PreviewResult {
+  one_liner: string;
+  features: string[];
+  coverage: PreviewCoverage[];
+  weak_spots: string[];
+  likely_questions: string[];
+}

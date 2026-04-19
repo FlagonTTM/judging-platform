@@ -7,6 +7,7 @@ import type {
   LeaderboardRow,
   Score,
   Stage,
+  Submission,
   Team,
   TeamProgress,
   TeamResultOut,
@@ -115,6 +116,15 @@ export function useMyTeam() {
   return useQuery<Team | null>({
     queryKey: ['me', 'team'],
     queryFn: async () => (await api.get<Team | null>('/me/team')).data,
+  });
+}
+
+export function useSubmission(teamId: string | undefined) {
+  return useQuery<Submission>({
+    queryKey: ['teams', teamId, 'submission'],
+    queryFn: async () =>
+      (await api.get<Submission>(`/teams/${teamId}/submission`)).data,
+    enabled: !!teamId,
   });
 }
 
