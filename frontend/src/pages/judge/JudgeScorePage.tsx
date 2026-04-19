@@ -1,30 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { api } from '@/lib/api';
-import { useCriteria, useMyScores, useTeamProgress } from '@/lib/queries';
+import { useCriteria, useMyScores, useTeam, useTeamProgress } from '@/lib/queries';
 import { useSubmitScores, useUpsertScores } from '@/lib/mutations';
 import { StarRating } from './components/StarRating';
 import { StageProgressBar } from '@/components/StageProgressBar';
-import type { Team } from '@/lib/types';
 
 export default function JudgeScorePage() {
   const { teamId = '' } = useParams<{ teamId: string }>();
-  const [team, setTeam] = useState<Team | null>(null);
-
-  useEffect(() => {
-    if (!teamId) return;
-    (async () => {
-      const events = (await api.get('/events')).data as Array<{ id: string }>;
-      for (const e of events) {
-        const teams = (await api.get(`/events/${e.id}/teams`)).data as Team[];
-        const found = teams.find((t) => t.id === teamId);
-        if (found) {
-          setTeam(found);
-          return;
-        }
-      }
-    })();
-  }, [teamId]);
+  const { data: team } = useTeam(teamId);
 
   const { data: criteria = [] } = useCriteria(team?.event_id);
   const { data: myScores = [] } = useMyScores(teamId);
@@ -42,7 +25,7 @@ export default function JudgeScorePage() {
     const v: Record<string, number> = {};
     const c: Record<string, string> = {};
     for (const s of myScores) {
-      v[s.criterion_id] = Number(s.value);
+      v[s.criterion_id] = s.value;
       c[s.criterion_id] = s.comment ?? '';
     }
     setValues((prev) => ({ ...v, ...prev }));

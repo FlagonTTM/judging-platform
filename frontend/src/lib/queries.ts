@@ -59,6 +59,14 @@ export function useTeams(eventId: string | undefined) {
   });
 }
 
+export function useTeam(teamId: string | undefined) {
+  return useQuery<Team>({
+    queryKey: ['teams', teamId],
+    queryFn: async () => (await api.get<Team>(`/teams/${teamId}`)).data,
+    enabled: !!teamId,
+  });
+}
+
 export function useMyScores(teamId: string | undefined) {
   return useQuery<Score[]>({
     queryKey: ['teams', teamId, 'scores', 'me'],

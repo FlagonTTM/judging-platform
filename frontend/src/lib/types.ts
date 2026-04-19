@@ -41,7 +41,7 @@ export interface Score {
   team_id: string;
   criterion_id: string;
   judge_id: string;
-  value: string;
+  value: number;
   comment: string | null;
   status: 'draft' | 'submitted';
   submitted_at: string | null;
@@ -50,7 +50,7 @@ export interface Score {
 export interface LeaderboardRow {
   team_id: string;
   team_name: string;
-  final_score: string;
+  final_score: number;
   judges_count: number;
 }
 
@@ -86,6 +86,6 @@ export interface TeamResultOut {
   team_id: string;
   team_name: string;
   rank: number;
-  final_score: string;
+  final_score: number;
   judges_count: number;
 }

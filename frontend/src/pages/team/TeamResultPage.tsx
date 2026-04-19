@@ -27,7 +27,7 @@ export default function TeamResultPage() {
     );
   }
 
-  const score = parseFloat(result.final_score).toFixed(2);
+  const score = result.final_score.toFixed(2);
 
   return (
     <div className="p-6 max-w-xl space-y-6">
