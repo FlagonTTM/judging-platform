@@ -26,41 +26,57 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="max-w-sm mx-auto mt-16">
-      <h2 className="text-2xl font-semibold mb-6">Вход</h2>
-      <form className="space-y-4" onSubmit={onSubmit}>
-        <input
-          type="email"
-          required
-          autoFocus
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full border rounded px-3 py-2"
-        />
-        <input
-          type="password"
-          required
-          placeholder="Пароль"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full border rounded px-3 py-2"
-        />
-        {error && <p className="text-red-600 text-sm">{error}</p>}
-        <button
-          type="submit"
-          disabled={login.isPending}
-          className="w-full bg-slate-800 text-white rounded py-2 disabled:opacity-50"
-        >
-          {login.isPending ? 'Входим…' : 'Войти'}
-        </button>
-      </form>
-      <p className="mt-4 text-sm text-slate-600">
-        Нет аккаунта?{' '}
-        <Link to="/register" className="text-slate-900 underline">
-          Зарегистрироваться
-        </Link>
-      </p>
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
+        <div className="mb-8 text-center">
+          <span className="text-emerald-600 font-bold text-2xl tracking-tight">TulaHack</span>
+          <p className="text-slate-500 text-sm mt-1">Платформа оценки хакатона</p>
+        </div>
+        <h2 className="text-xl font-semibold text-slate-900 mb-6">Вход в систему</h2>
+        <form className="space-y-4" onSubmit={onSubmit}>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+            <input
+              type="email"
+              required
+              autoFocus
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Пароль</label>
+            <input
+              type="password"
+              required
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+            />
+          </div>
+          {error && (
+            <p className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+              {error}
+            </p>
+          )}
+          <button
+            type="submit"
+            disabled={login.isPending}
+            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg py-2.5 font-medium transition-colors disabled:opacity-50"
+          >
+            {login.isPending ? 'Входим…' : 'Войти'}
+          </button>
+        </form>
+        <p className="mt-6 text-sm text-slate-500 text-center">
+          Нет аккаунта?{' '}
+          <Link to="/register" className="text-emerald-600 hover:text-emerald-700 font-medium">
+            Зарегистрироваться
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }
