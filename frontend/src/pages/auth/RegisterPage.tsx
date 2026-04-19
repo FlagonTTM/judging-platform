@@ -19,7 +19,7 @@ export default function RegisterPage() {
       const user = await register.mutateAsync({ email, password, name, role });
       if (user.role === 'admin') navigate('/admin/events');
       else if (user.role === 'judge') navigate('/judge');
-      else navigate('/');
+      else navigate('/team/progress');
     } catch {
       setError('Не удалось зарегистрироваться');
     }

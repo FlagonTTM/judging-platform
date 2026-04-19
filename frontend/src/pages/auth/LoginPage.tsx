@@ -16,10 +16,18 @@ export default function LoginPage() {
     try {
       const user = await login.mutateAsync({ email, password });
       const from = (location.state as { from?: string } | null)?.from;
-      if (from) navigate(from);
-      else if (user.role === 'admin') navigate('/admin/events');
-      else if (user.role === 'judge') navigate('/judge');
-      else navigate('/');
+      const home =
+        user.role === 'admin'
+          ? '/admin/events'
+          : user.role === 'judge'
+            ? '/judge'
+            : '/team/progress';
+      const canUseFrom =
+        from &&
+        (user.role === 'admin' ||
+          (user.role === 'judge' && from.startsWith('/judge')) ||
+          (user.role === 'team' && from.startsWith('/team')));
+      navigate(canUseFrom ? from! : home);
     } catch {
       setError('Неверные email или пароль');
     }

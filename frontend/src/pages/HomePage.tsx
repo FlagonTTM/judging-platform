@@ -7,6 +7,7 @@ export default function HomePage() {
   if (isLoading) return <p className="text-slate-500">Загрузка…</p>;
   if (user?.role === 'admin') return <Navigate to="/admin/events" replace />;
   if (user?.role === 'judge') return <Navigate to="/judge" replace />;
+  if (user?.role === 'team') return <Navigate to="/team/progress" replace />;
 
   return (
     <div className="max-w-xl mx-auto mt-16 text-center space-y-6">
