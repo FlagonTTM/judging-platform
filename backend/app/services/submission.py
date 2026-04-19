@@ -7,11 +7,10 @@ import uuid
 from dataclasses import dataclass
 from typing import Any
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.models.criterion import Criterion
-from sqlalchemy import select
-
 
 SUBMISSION_FIELDS = (
     "description",
@@ -149,9 +148,10 @@ def run_check(submission: dict[str, Any]) -> CheckResult:
             )
 
     statuses = {it.status for it in items}
+    missing_keys = {it.key for it in items if it.status == "missing"}
     if statuses <= {"ok"}:
         overall = "ready"
-    elif "broken" in statuses or ("missing" in statuses and {"description"} & {it.key for it in items if it.status == "missing"}):
+    elif "broken" in statuses or "description" in missing_keys:
         overall = "not_ready"
     else:
         overall = "weak"
