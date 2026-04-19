@@ -20,22 +20,22 @@ export function EventSettings({ eventId }: { eventId: string }) {
     title: string;
     desc: string;
   }) => (
-    <div className="flex items-start justify-between border-b py-3 last:border-b-0">
-      <div className="pr-4">
-        <p className="font-medium">{title}</p>
-        <p className="text-sm text-slate-500">{desc}</p>
+    <div className="flex items-start justify-between py-4 border-b border-slate-100 last:border-b-0">
+      <div className="pr-6">
+        <p className="font-medium text-slate-900">{title}</p>
+        <p className="text-sm text-slate-500 mt-0.5">{desc}</p>
       </div>
       <button
         onClick={() => toggle(field)}
         className={
-          'relative h-6 w-11 rounded-full transition-colors ' +
-          (event[field] ? 'bg-emerald-500' : 'bg-slate-300')
+          'relative flex-shrink-0 h-6 w-11 rounded-full transition-colors ' +
+          (event[field] ? 'bg-emerald-500' : 'bg-slate-200')
         }
         aria-pressed={event[field]}
       >
         <span
           className={
-            'absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ' +
+            'absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform ' +
             (event[field] ? 'translate-x-5' : 'translate-x-0.5')
           }
         />
@@ -44,7 +44,8 @@ export function EventSettings({ eventId }: { eventId: string }) {
   );
 
   return (
-    <div className="bg-white border rounded px-4 max-w-xl">
+    <div className="max-w-xl space-y-0">
+      <h3 className="font-semibold text-slate-900 mb-4">Настройки события</h3>
       <Row
         field="leaderboard_public"
         title="Публичный leaderboard"
