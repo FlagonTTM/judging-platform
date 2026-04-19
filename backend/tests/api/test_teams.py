@@ -78,3 +78,23 @@ def test_my_team_returns_null_if_none(client: TestClient):
     })
     r = client.get("/api/v1/me/team")
     assert r.status_code == 200 and r.json() is None
+
+
+def test_get_team_by_id(client: TestClient):
+    event_id = _setup(client)
+    r = client.post(f"/api/v1/events/{event_id}/teams", json={
+        "name": "TestTeam",
+        "track": "Web",
+        "members": [{"name": "John", "email": "j@x.y"}],
+        "contacts": {"phone": "+123"},
+    })
+    assert r.status_code == 201, r.text
+    team_id = r.json()["id"]
+
+    r = client.get(f"/api/v1/teams/{team_id}")
+    assert r.status_code == 200
+    assert r.json()["name"] == "TestTeam"
+    assert r.json()["id"] == team_id
+
+    r = client.get("/api/v1/teams/00000000-0000-0000-0000-000000000000")
+    assert r.status_code == 404

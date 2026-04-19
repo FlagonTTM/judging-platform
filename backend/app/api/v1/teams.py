@@ -51,6 +51,14 @@ def create_team(
     return _to_out(svc.create(db, event_id, **payload.model_dump()))
 
 
+@router.get("/teams/{team_id}", response_model=TeamOut)
+def get_team(team_id: uuid.UUID, db: DbSession, _: CurrentUser) -> TeamOut:
+    team = svc.get(db, team_id)
+    if team is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "team not found")
+    return _to_out(team)
+
+
 @router.patch("/teams/{team_id}", response_model=TeamOut)
 def update_team(
     team_id: uuid.UUID,
