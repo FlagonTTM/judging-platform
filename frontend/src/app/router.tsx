@@ -13,12 +13,12 @@ import TeamProgressPage from '@/pages/team/TeamProgressPage';
 import TeamResultPage from '@/pages/team/TeamResultPage';
 
 const router = createBrowserRouter([
+  { path: '/login', element: <LoginPage /> },
+  { path: '/register', element: <RegisterPage /> },
   {
     element: <AppLayout />,
     children: [
       { path: '/', element: <HomePage /> },
-      { path: '/login', element: <LoginPage /> },
-      { path: '/register', element: <RegisterPage /> },
       {
         path: '/admin/events',
         element: (
