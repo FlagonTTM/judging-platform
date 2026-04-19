@@ -18,7 +18,7 @@ export function EventTimer({ deadline }: { deadline: string | null }) {
   const target = new Date(deadline).getTime();
   const left = target - now;
   return (
-    <span className="text-sm font-mono text-gray-700">
+    <span className="text-sm font-mono font-semibold text-emerald-400">
       {left <= 0 ? 'Дедлайн прошёл' : fmt(left)}
     </span>
   );
