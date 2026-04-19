@@ -16,25 +16,28 @@ export default function EventDetailPage() {
   if (!event) return <p className="text-slate-500">Загрузка…</p>;
 
   const tabClass = (active: boolean) =>
-    'px-4 py-2 border-b-2 text-sm ' +
+    'px-4 py-2.5 border-b-2 text-sm font-medium transition-colors ' +
     (active
-      ? 'border-slate-900 text-slate-900 font-medium'
-      : 'border-transparent text-slate-500 hover:text-slate-700');
+      ? 'border-emerald-600 text-emerald-700'
+      : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300');
 
   return (
     <div className="space-y-6">
       <div>
-        <Link to="/admin/events" className="text-sm text-slate-500 hover:underline">
+        <Link
+          to="/admin/events"
+          className="text-sm text-slate-400 hover:text-slate-600 transition-colors"
+        >
           ← К списку событий
         </Link>
-        <h2 className="text-2xl font-semibold mt-2">{event.name}</h2>
-        <p className="text-sm text-slate-500">
+        <h1 className="text-2xl font-semibold text-slate-900 mt-2">{event.name}</h1>
+        <p className="text-sm text-slate-500 mt-1">
           {new Date(event.start_at).toLocaleString('ru-RU')} —{' '}
           {new Date(event.end_at).toLocaleString('ru-RU')}
         </p>
       </div>
 
-      <div className="border-b flex gap-2">
+      <div className="border-b border-slate-200 flex gap-1">
         <button onClick={() => setTab('criteria')} className={tabClass(tab === 'criteria')}>
           Критерии
         </button>
@@ -49,10 +52,12 @@ export default function EventDetailPage() {
         </button>
       </div>
 
-      {tab === 'criteria' && <CriteriaBuilder eventId={id} />}
-      {tab === 'teams' && <TeamsRoster eventId={id} />}
-      {tab === 'stages' && <StagesEditor eventId={id} />}
-      {tab === 'settings' && <EventSettings eventId={id} />}
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
+        {tab === 'criteria' && <CriteriaBuilder eventId={id} />}
+        {tab === 'teams' && <TeamsRoster eventId={id} />}
+        {tab === 'stages' && <StagesEditor eventId={id} />}
+        {tab === 'settings' && <EventSettings eventId={id} />}
+      </div>
     </div>
   );
 }
