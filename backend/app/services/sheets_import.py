@@ -47,7 +47,7 @@ def _fetch_csv(url: str) -> str:
         ) from exc
     except urllib.error.URLError as exc:
         raise SheetImportError(f"не удалось скачать таблицу: {exc.reason}") from exc
-    return raw.decode("utf-8-sig", errors="replace")
+    return str(raw.decode("utf-8-sig", errors="replace"))
 
 
 @dataclass
