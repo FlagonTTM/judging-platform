@@ -7,7 +7,7 @@ from sqlalchemy import select
 from app.api.deps import CurrentUser, DbSession
 from app.api.v1.events import AdminUser
 from app.models.team import Team
-from app.models.user import UserRole
+from app.models.user import User, UserRole
 from app.schemas.submission import (
     CheckItemOut,
     CheckResultOut,
@@ -121,7 +121,7 @@ def import_teams(
     )
 
 
-def _team_for_submission(db: DbSession, team_id: uuid.UUID, user, *, write: bool) -> Team:
+def _team_for_submission(db: DbSession, team_id: uuid.UUID, user: User, *, write: bool) -> Team:
     team = svc.get(db, team_id)
     if team is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "team not found")
