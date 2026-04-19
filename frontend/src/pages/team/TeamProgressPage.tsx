@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-
 import { useMyTeam, useTeamProgress } from '@/lib/queries';
 import { setStageStatus } from '@/lib/mutations';
 import type { StageStatus } from '@/lib/types';
@@ -16,6 +15,12 @@ const LABEL: Record<StageStatus, string> = {
   done: 'Готово',
 };
 
+const statusBadge: Record<StageStatus, string> = {
+  pending: 'bg-slate-100 text-slate-500',
+  in_progress: 'bg-amber-100 text-amber-700',
+  done: 'bg-emerald-100 text-emerald-700',
+};
+
 export default function TeamProgressPage() {
   const { data: team } = useMyTeam();
   const { data: progress } = useTeamProgress(team?.id);
@@ -24,37 +29,45 @@ export default function TeamProgressPage() {
   const mut = useMutation({
     mutationFn: ({ stageId, status }: { stageId: string; status: StageStatus }) =>
       setStageStatus(team!.id, stageId, status),
-    onSuccess: () =>
-      qc.invalidateQueries({ queryKey: ['progress', 'team', team?.id] }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['progress', 'team', team?.id] }),
   });
 
   if (!team) {
     return (
-      <div className="p-6 text-slate-600">
-        У вас пока нет команды. Обратитесь к админу.
+      <div className="max-w-xl mx-auto mt-8">
+        <p className="text-slate-600">У вас пока нет команды. Обратитесь к администратору.</p>
       </div>
     );
   }
-  if (!progress) return <div className="p-6">Загружаем…</div>;
+  if (!progress) return <p className="text-slate-500">Загружаем…</p>;
 
   return (
-    <div className="space-y-4">
-      <h1 className="text-2xl font-semibold">Прогресс — {team.name}</h1>
-      <ol className="space-y-2">
+    <div className="space-y-6 max-w-2xl">
+      <div>
+        <h1 className="text-2xl font-semibold text-slate-900">{team.name}</h1>
+        <p className="text-slate-500 text-sm mt-1">Прогресс по этапам</p>
+      </div>
+
+      <ol className="space-y-3">
         {progress.items.map((it) => (
           <li
             key={it.stage_id}
-            className="flex items-center justify-between rounded border bg-white p-3"
+            className="flex items-center justify-between bg-white border border-slate-200 rounded-xl shadow-sm px-5 py-4"
           >
             <div>
-              <div className="font-medium">{it.stage_name}</div>
-              <div className="text-sm text-slate-500">{LABEL[it.status]}</div>
+              <p className="font-medium text-slate-900">{it.stage_name}</p>
+              <span
+                className={
+                  'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mt-1 ' +
+                  statusBadge[it.status]
+                }
+              >
+                {LABEL[it.status]}
+              </span>
             </div>
             <button
-              onClick={() =>
-                mut.mutate({ stageId: it.stage_id, status: NEXT[it.status] })
-              }
-              className="rounded bg-slate-900 px-3 py-1 text-white text-sm"
+              onClick={() => mut.mutate({ stageId: it.stage_id, status: NEXT[it.status] })}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg px-4 py-2 text-sm font-medium transition-colors"
             >
               → {LABEL[NEXT[it.status]]}
             </button>
