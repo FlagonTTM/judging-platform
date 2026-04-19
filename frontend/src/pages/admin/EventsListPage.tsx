@@ -24,81 +24,112 @@ export default function EventsListPage() {
 
   return (
     <div className="space-y-8">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold text-slate-900">События</h1>
+      </div>
+
       <section>
-        <h2 className="text-xl font-semibold mb-4">События</h2>
         {isLoading ? (
           <p className="text-slate-500">Загрузка…</p>
         ) : events.length === 0 ? (
           <p className="text-slate-500">Пока нет ни одного события</p>
         ) : (
-          <ul className="divide-y border rounded bg-white">
-            {events.map((e) => (
-              <li key={e.id} className="px-4 py-3 flex items-center justify-between">
-                <div>
-                  <Link to={`/admin/events/${e.id}`} className="font-medium hover:underline">
-                    {e.name}
-                  </Link>
-                  <p className="text-sm text-slate-500">
-                    {new Date(e.start_at).toLocaleString('ru-RU')} —{' '}
-                    {new Date(e.end_at).toLocaleString('ru-RU')}
-                  </p>
-                </div>
-                <div className="flex gap-2 text-xs">
-                  {e.leaderboard_public && (
-                    <span className="px-2 py-1 bg-emerald-100 text-emerald-800 rounded">
-                      рейтинг открыт
-                    </span>
-                  )}
-                  {e.results_published && (
-                    <span className="px-2 py-1 bg-sky-100 text-sky-800 rounded">
-                      результаты опубликованы
-                    </span>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
+          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-200">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                    Название
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                    Даты
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                    Статус
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {events.map((e) => (
+                  <tr key={e.id} className="border-b border-slate-100 last:border-b-0 hover:bg-slate-50 transition-colors">
+                    <td className="px-4 py-3">
+                      <Link
+                        to={`/admin/events/${e.id}`}
+                        className="font-medium text-slate-900 hover:text-emerald-700 transition-colors"
+                      >
+                        {e.name}
+                      </Link>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-slate-500">
+                      {new Date(e.start_at).toLocaleString('ru-RU', { dateStyle: 'short', timeStyle: 'short' })}
+                      {' — '}
+                      {new Date(e.end_at).toLocaleString('ru-RU', { dateStyle: 'short', timeStyle: 'short' })}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex gap-2 flex-wrap">
+                        {e.leaderboard_public && (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">
+                            рейтинг открыт
+                          </span>
+                        )}
+                        {e.results_published && (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-sky-100 text-sky-700">
+                            результаты
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </section>
 
-      <section className="max-w-md">
-        <h3 className="text-lg font-semibold mb-3">Создать событие</h3>
-        <form className="space-y-3" onSubmit={onCreate}>
-          <input
-            required
-            placeholder="Название"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full border rounded px-3 py-2"
-          />
-          <label className="block text-sm text-slate-600">
-            Начало
-            <input
-              required
-              type="datetime-local"
-              value={startAt}
-              onChange={(e) => setStartAt(e.target.value)}
-              className="mt-1 w-full border rounded px-3 py-2"
-            />
-          </label>
-          <label className="block text-sm text-slate-600">
-            Окончание
-            <input
-              required
-              type="datetime-local"
-              value={endAt}
-              onChange={(e) => setEndAt(e.target.value)}
-              className="mt-1 w-full border rounded px-3 py-2"
-            />
-          </label>
-          <button
-            type="submit"
-            disabled={create.isPending}
-            className="bg-slate-800 text-white rounded px-4 py-2 disabled:opacity-50"
-          >
-            {create.isPending ? 'Создаём…' : 'Создать'}
-          </button>
-        </form>
+      <section>
+        <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-6 max-w-md">
+          <h3 className="text-lg font-semibold text-slate-900 mb-4">Создать событие</h3>
+          <form className="space-y-4" onSubmit={onCreate}>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Название</label>
+              <input
+                required
+                placeholder="TulaHack 2026"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Начало</label>
+              <input
+                required
+                type="datetime-local"
+                value={startAt}
+                onChange={(e) => setStartAt(e.target.value)}
+                className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Окончание</label>
+              <input
+                required
+                type="datetime-local"
+                value={endAt}
+                onChange={(e) => setEndAt(e.target.value)}
+                className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={create.isPending}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg px-5 py-2.5 font-medium transition-colors disabled:opacity-50"
+            >
+              {create.isPending ? 'Создаём…' : 'Создать'}
+            </button>
+          </form>
+        </div>
       </section>
     </div>
   );
