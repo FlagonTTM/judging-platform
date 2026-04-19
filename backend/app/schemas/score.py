@@ -29,7 +29,7 @@ class ScoreOut(BaseModel):
 class LeaderboardRow(BaseModel):
     team_id: str
     team_name: str
-    final_score: Decimal
+    final_score: float
     judges_count: int
 
 
@@ -37,5 +37,5 @@ class TeamResultOut(BaseModel):
     team_id: str
     team_name: str
     rank: int
-    final_score: Decimal
+    final_score: float
     judges_count: int
