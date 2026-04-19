@@ -1,8 +1,20 @@
-import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import { useLogout } from '@/lib/mutations';
 import { useEvents } from '@/lib/queries';
 import { EventTimer } from '@/components/EventTimer';
+
+const navClass = ({ isActive }: { isActive: boolean }) =>
+  'flex items-center px-3 py-2.5 rounded-lg text-sm transition-colors ' +
+  (isActive
+    ? 'bg-emerald-700 text-white font-medium'
+    : 'text-emerald-100 hover:bg-emerald-800');
+
+const roleLabel: Record<string, string> = {
+  admin: 'Администратор',
+  judge: 'Жюри',
+  team: 'Команда',
+};
 
 export function AppLayout() {
   const { user } = useAuth();
@@ -12,61 +24,74 @@ export function AppLayout() {
   const activeEvent = events?.[0];
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="bg-white border-b">
-        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-          <Link to="/" className="font-semibold text-slate-900">
-            Judging Platform
-          </Link>
-          <nav className="flex items-center gap-4 text-sm">
-            {user?.role === 'admin' && (
-              <Link to="/admin/events" className="text-slate-700 hover:text-slate-900">
-                События
-              </Link>
-            )}
-            {user?.role === 'judge' && (
-              <Link to="/judge" className="text-slate-700 hover:text-slate-900">
-                Оценивание
-              </Link>
-            )}
-            {user?.role === 'team' && (
-              <>
-                <Link to="/team/progress" className="text-slate-700 hover:text-slate-900">
-                  Прогресс
-                </Link>
-                <Link to="/team/results" className="text-slate-700 hover:text-slate-900">
-                  Результаты
-                </Link>
-              </>
-            )}
-            {user && activeEvent && (
-              <span className="flex items-center gap-2">
-                <span className="text-xs text-slate-500">До дедлайна:</span>
-                <EventTimer deadline={activeEvent.deadline ?? activeEvent.end_at} />
-              </span>
-            )}
-            {user ? (
-              <>
-                <span className="text-slate-500">{user.name} · {user.role}</span>
-                <button
-                  className="text-slate-700 hover:text-slate-900"
-                  onClick={async () => {
-                    await logout.mutateAsync();
-                    navigate('/login');
-                  }}
-                >
-                  Выйти
-                </button>
-              </>
-            ) : (
-              <Link to="/login" className="text-slate-700 hover:text-slate-900">
-                Войти
-              </Link>
-            )}
-          </nav>
+    <div className="flex min-h-screen">
+      <aside className="fixed left-0 top-0 h-full w-56 bg-emerald-900 flex flex-col z-10">
+        <div className="px-5 py-4 border-b border-emerald-800">
+          <span className="text-emerald-400 font-bold text-lg tracking-tight">TulaHack</span>
+          <span className="ml-1 text-emerald-600 text-sm">2026</span>
         </div>
-      </header>
-      <main className="max-w-6xl mx-auto px-6 py-8">
+
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+          {user?.role === 'admin' && (
+            <NavLink to="/admin/events" className={navClass}>
+              События
+            </NavLink>
+          )}
+          {user?.role === 'judge' && (
+            <NavLink to="/judge" className={navClass}>
+              Оценивание
+            </NavLink>
+          )}
+          {user?.role === 'team' && (
+            <>
+              <NavLink to="/team/progress" className={navClass}>
+                Прогресс
+              </NavLink>
+              <NavLink to="/team/results" className={navClass}>
+                Результаты
+              </NavLink>
+            </>
+          )}
+          {!user && (
+            <NavLink to="/" className={navClass}>
+              Главная
+            </NavLink>
+          )}
+        </nav>
+
+        <div className="px-4 py-4 border-t border-emerald-800">
+          {user && activeEvent && (
+            <div className="mb-3">
+              <p className="text-xs text-emerald-500 mb-0.5">До дедлайна</p>
+              <EventTimer deadline={activeEvent.deadline ?? activeEvent.end_at} />
+            </div>
+          )}
+          {user ? (
+            <>
+              <p className="text-sm font-medium text-emerald-100 truncate">{user.name}</p>
+              <p className="text-xs text-emerald-400 mb-3">{roleLabel[user.role] ?? user.role}</p>
+              <button
+                onClick={async () => {
+                  await logout.mutateAsync();
+                  navigate('/login');
+                }}
+                className="text-xs text-emerald-400 hover:text-emerald-200 transition-colors"
+              >
+                Выйти
+              </button>
+            </>
+          ) : (
+            <NavLink
+              to="/login"
+              className="text-xs text-emerald-400 hover:text-emerald-200 transition-colors"
+            >
+              Войти
+            </NavLink>
+          )}
+        </div>
+      </aside>
+
+      <main className="ml-56 flex-1 bg-slate-50 min-h-screen p-8">
         <Outlet />
       </main>
     </div>
